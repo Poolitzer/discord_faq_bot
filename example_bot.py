@@ -8,15 +8,17 @@ logging.basicConfig(filename="log.log", level=logging.ERROR,
 data_file = open('./database.json')
 database = json.load(data_file)
 bot = commands.Bot(command_prefix='!')
-idlist = [29628094681173761]
+idlist = [296280946813173761]
 
 
 async def is_allowed(ctx):
     skip = False
+    idlist.append(ctx.guild.owner_id)
     for ids in idlist:
         if ctx.author.id == ids:
             skip = True
             break
+    idlist.pop()
     if ctx.author.top_role.name == "mods" or skip:
         return True
 
@@ -47,6 +49,7 @@ async def add(ctx, *, arg):
         database[pattern.group(1).lower()] = pattern.group(2)
         with open('./database.json', 'w') as outfile:
             json.dump(database, outfile, indent=4, sort_keys=True)
+            await ctx.send("I saved the command **{}**".format(pattern.group(1).lower()))
     else:
         await ctx.send("You need to give me a command name and a value. Like `!add {} IsStupid`, if you want to have "
                        "your own name there and then get IsStupid as return".format(ctx.author.name))
